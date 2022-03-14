@@ -19,13 +19,14 @@ published a review in *Science* on [‘The ecological and evolutionary
 consequences of systemic racism in urban
 environments’](https://science.sciencemag.org/content/early/2020/08/12/science.aay4497)
 (DOI: 10.1126/science.aay4497), showing how systematic racism and
-classism has significant impacts on ecologial and evolutionary processes
-within urban environments. Here we explore a subset of the data used to
-support these findings in this review and the broaded literature.
+classism has significant impacts on ecological and evolutionary
+processes within urban environments. Here we explore a subset of the
+data used to support these findings in this review and the broader
+literature.
 
 The [press
 release](https://www.washington.edu/news/2020/08/13/systemic-racism-has-consequences-for-all-life-in-cities/)
-on the paper is worth a read if you have the time:
+on the paper is worth a read:
 
 > “Racism is destroying our planet, and how we treat each other is
 > essentially structural violence against our natural world,” said lead
