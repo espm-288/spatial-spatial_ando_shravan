@@ -50,9 +50,9 @@ oakland <- sf::st_read('https://dsl.richmond.edu/panorama/redlining/static/downl
 View(birm)
 View(oakland)
 
-tmap_mode("view")
 
 #tmap interactive
+tmap_mode("view")
 
 oakland |> filter(holc_grade %in% c('D','C')) |> tm_shape() + tm_polygons("holc_grade", alpha=0.4, palette = red(2)) + tm_graticules() + tm_compass() + tm_legend() 
 
@@ -73,16 +73,65 @@ Please take the time to read the introduction to this dataset [here](https://dsl
 **2.Normalized Difference Vegetation Index (NDVI)** (raster data)
 NDVI is used as proxy measure of vegetation health, cover and phenology (life cycle stage) over large areas. It is calculated using multiple bands from satellite images.
 
+```{r}
 
+```
 
 # Exercise 1
 **Create a map which shows current (2019) mean NDVI across city redlining from the 1950s.**
 
 ```{r}
+
+
+tmap_mode("plot")
+
+birm_ndvi <- terra::rast("../data/NDVI/composite_birmingham.tif")
+
+View(birm_ndvi)
+
+# Order is important -> first is lower (NDVI)
+# set the bounding of the smaller dataset
+tm_shape(birm_ndvi, bbox = st_bbox(birm)) + tm_raster() +
+   tm_shape(birm) + tm_polygons("holc_grade", alpha=0.3)
+
+
+# we want to go within each redline district and add up all the NDVI data so it can be compared to other 1930s areas
+
 ```
 
 # Exercise 2
 **Plot the average NDVI values in different neighborhoods as well as the distribution of pixel values across cities and neighborhoods. Show how the trends differ between cities.**
+
+
+```{r}
+#Convert birm raster to terra land
+birm_terra <- vect(birm)
+birm_terra
+
+#Summarize the data, i.e. within each polygon, calculate the average value of NDVI
+#convert to tibble object
+mean_ndvi <- terra::extract(birm_ndvi, birm_terra, mean, na.rm = T) |> as_tibble()
+
+#Equivalent code in dplyr land
+#mean_ndvi <- terra::extract(birm_ndvi, birm_terra) |> group_by(ID) |> summarise(mean_ndvi = mean(NDVI, na.rm=T))
+
+birm
+
+
+#Give birm a column number, and calculate 
+birm_vec <- birm |> mutate(ID = 1:n(), area=st_area(geometry))
+
+#Join birm_vec and mean_ndvi, keeping the ID, holc_grade, mean_ndvi and area
+birm_final <- inner_join(mean_ndvi, birm_vec, by='ID')
+
+birm_final$area
+
+#find the weighted average of NDVI values by area, for every holc_grade
+birm_final |> group_by(holc_grade) |> summarize(mean_holc_ndvi = sum(NDVI*area) / sum(area), )
+
+```
+
+
 
 
 
