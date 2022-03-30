@@ -1,8 +1,8 @@
 ---
 title: "The ecological and evolutionary consequences of systemic racism"
-author: "Millie Chapman (GSI)"
+author: "Ando Shah and Shravan Kumar Undaru"
 output: 
-  github_document:
+  html_document:
     df_print: tibble
 ---
 
@@ -47,14 +47,14 @@ phoenix <- sf::st_read('https://dsl.richmond.edu/panorama/redlining/static/downl
 minn <- sf::st_read('https://dsl.richmond.edu/panorama/redlining/static/downloads/geojson/MNMinneapolis1937.geojson')
 oakland <- sf::st_read('https://dsl.richmond.edu/panorama/redlining/static/downloads/geojson/CAOakland1937.geojson')
 
-View(birm)
-View(oakland)
+# View(birm)
+# View(oakland)
 
 
 #tmap interactive
 tmap_mode("view")
 
-oakland |> filter(holc_grade %in% c('D','C')) |> tm_shape() + tm_polygons("holc_grade", alpha=0.4, palette = red(2)) + tm_graticules() + tm_compass() + tm_legend() 
+oakland |> filter(holc_grade %in% c('D','C')) |> tm_shape() + tm_polygons("holc_grade", alpha=0.4) + tm_graticules() + tm_compass() + tm_legend() 
 
 
 tm_shape(birm) + tm_polygons("holc_grade", alpha=0.4)  + tm_graticules() + tm_compass() + tm_legend()
@@ -87,13 +87,12 @@ tmap_mode("plot")
 
 birm_ndvi <- terra::rast("../data/NDVI/composite_birmingham.tif")
 
-View(birm_ndvi)
+# View(birm_ndvi)
 
 # Order is important -> first is lower (NDVI)
 # set the bounding of the smaller dataset
 tm_shape(birm_ndvi, bbox = st_bbox(birm)) + tm_raster() +
    tm_shape(birm) + tm_polygons("holc_grade", alpha=0.3)
-
 
 # we want to go within each redline district and add up all the NDVI data so it can be compared to other 1930s areas
 
