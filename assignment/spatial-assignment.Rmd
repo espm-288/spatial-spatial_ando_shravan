@@ -39,7 +39,7 @@ We are going to recreate these city maps, and plot the distributions and mean ve
 
 ```{r}
 
-
+#Sf <- simple features!
 birm <- sf::st_read('https://dsl.richmond.edu/panorama/redlining/static/downloads/geojson/ALBirmingham1937.geojson')
 ind <- sf::st_read('https://dsl.richmond.edu/panorama/redlining/static/downloads/geojson/INIndianapolis1937.geojson')
 balti <- sf::st_read('https://dsl.richmond.edu/panorama/redlining/static/downloads/geojson/MDBaltimore1937.geojson')
@@ -92,7 +92,7 @@ birm_ndvi <- terra::rast("../data/NDVI/composite_birmingham.tif")
 # Order is important -> first is lower (NDVI)
 # set the bounding of the smaller dataset
 tm_shape(birm_ndvi, bbox = st_bbox(birm)) + tm_raster() +
-   tm_shape(birm) + tm_polygons("holc_grade", alpha=0.3)
+   tm_shape(birm) + tm_polygons("holc_grade", alpha=0.6)
 
 # we want to go within each redline district and add up all the NDVI data so it can be compared to other 1930s areas
 
@@ -126,11 +126,27 @@ birm_final <- inner_join(mean_ndvi, birm_vec, by='ID')
 birm_final$area
 
 #find the weighted average of NDVI values by area, for every holc_grade
-birm_final |> group_by(holc_grade) |> summarize(mean_holc_ndvi = sum(NDVI*area) / sum(area), )
+birm_final |> group_by(holc_grade) |> summarize(mean_holc_ndvi = sum(NDVI*area) / sum(area) )
 
 ```
+### Show cropped NDVI to polygons of interest
+```{r}
+d = st_dimensions(birm_ndvi)
+e <- ext(6.15, 6.3, 49.7, 49.8)
+e <- ext(-86.756777, -86.75692, -86.762018, -86.762268)
+
+birm_cropped <- crop(birm_terra, e)
+plot(birm_cropped)
+
+tmap_mode("view")
+holc_mask <- mask(birm_ndvi, birm_terra)
+tm_shape(holc_mask) + tm_raster(style= "cont")
 
 
+tm_shape(holc_mask, bbox = st_bbox(birm)) + tm_raster() +
+   tm_shape(birm) + tm_polygons("holc_grade", alpha=0.1) + tm_borders(col="holc_grade")
+
+```
 
 
 
