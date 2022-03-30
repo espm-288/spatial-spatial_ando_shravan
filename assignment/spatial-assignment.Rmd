@@ -33,7 +33,7 @@ In the paper, Schell writes:
 We are going to explore one metric for how structural racism and classism underpin landscape heterogeneity in cities.
 
 **Figure 2** in the Schell paper shows how NDVI (Normalized Difference Vegetation Index) tracks historical redlining.
-![Fig. 1.](figures/fig2.png)
+![Fig. 1.](figures/fig2.png)  
 
 We are going to recreate these city maps, and plot the distributions and mean vegetation patterns across cities to explore the structural inequality and racism that Schell et al highlight in their paper.
 
