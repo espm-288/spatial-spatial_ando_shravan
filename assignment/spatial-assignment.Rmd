@@ -165,10 +165,10 @@ birm_D <- birm[birm$holc_grade == "D",]
 
 
 tm_shape(holc_mask, bbox = st_bbox(birm)) + tm_raster(palette = get_brewer_pal(palette="YlGn", n=5, plot=FALSE), title = "NDVI") +
-   tm_shape(birm_A) + tm_polygons(x="holc_grade", title="A",alpha=.1,border.col='green', title="A")+
-   tm_shape(birm_B) + tm_polygons(x="holc_grade", title="B",alpha=.1,border.col='blue')+
-   tm_shape(birm_C) + tm_polygons(x="holc_grade", title="C",alpha=.1,border.col='orange')+
-   tm_shape(birm_D) + tm_polygons(x="holc_grade", title="D",alpha=.1,border.col='red') + 
+   tm_shape(birm_A) + tm_polygons(x="holc_grade", title="A",alpha=0,border.col='green', title="A")+
+   tm_shape(birm_B) + tm_polygons(x="holc_grade", title="B",alpha=0,border.col='blue')+
+   tm_shape(birm_C) + tm_polygons(x="holc_grade", title="C",alpha=0,border.col='orange')+
+   tm_shape(birm_D) + tm_polygons(x="holc_grade", title="D",alpha=0,border.col='red') + 
    tm_add_legend('title', 
                	col = c('green','blue', 'orange', 'red' ),
                	border.col = "grey40",
