@@ -130,24 +130,56 @@ birm_final |> group_by(holc_grade) |> summarize(mean_holc_ndvi = sum(NDVI*area) 
 
 ```
 ### Show cropped NDVI to polygons of interest
-```{r}
-d = st_dimensions(birm_ndvi)
-e <- ext(6.15, 6.3, 49.7, 49.8)
-e <- ext(-86.756777, -86.75692, -86.762018, -86.762268)
-
-birm_cropped <- crop(birm_terra, e)
-plot(birm_cropped)
-
+```{r, eval=FALSE}
+#Test code : delete
 tmap_mode("view")
-holc_mask <- mask(birm_ndvi, birm_terra)
-tm_shape(holc_mask) + tm_raster(style= "cont")
+holc_mask <- terra::mask(x=birm_ndvi, mask=birm_terra)
+tm_shape(holc_mask, bbox = st_bbox(birm)) + tm_raster()
 
 
-tm_shape(holc_mask, bbox = st_bbox(birm)) + tm_raster() +
-   tm_shape(birm) + tm_polygons("holc_grade", alpha=0.1) + tm_borders(col="holc_grade")
+tm_shape(holc_mask, bbox = st_bbox(birm)) + tm_raster(palette = terrain.colors(4)) +
+   tm_shape(birm, is.master = TRUE) + tm_polygons("holc_grade", alpha=1) #+ tm_borders(col="holc_grade")
+
+tm_shape(birm_ndvi, bbox = st_bbox(birm)) + tm_raster(palette = terrain.colors(5)) +
+   tm_shape(birm) + tm_polygons("holc_grade", alpha=.1) #+ tm_borders(col="holc_grade")
+
+holc_mask_inv <- 1 - holc_mask
+holc_mask_inv
+
+tm_shape(holc_mask_inv, bbox = st_bbox(birm)) + tm_raster(palette = -terrain.colors(5)) +
+   tm_shape(birm) + tm_polygons("holc_grade", alpha=.1,border.col='red') #+ tm_fill(col="holc_grade") 
 
 ```
 
+## TODO: Convert this into a function and call for each city
+
+```{r}
+library(tmaptools)
+holc_mask <- terra::mask(x=birm_ndvi, mask=birm_terra)
+
+tmap_mode("plot")
+birm_A <- birm[birm$holc_grade == "A",]
+birm_B <- birm[birm$holc_grade == "B",]
+birm_C <- birm[birm$holc_grade == "C",]
+birm_D <- birm[birm$holc_grade == "D",]
+
+
+tm_shape(holc_mask, bbox = st_bbox(birm)) + tm_raster(palette = get_brewer_pal(palette="YlGn", n=5, plot=FALSE), title = "NDVI") +
+   tm_shape(birm_A) + tm_polygons(x="holc_grade", title="A",alpha=.1,border.col='green', title="A")+
+   tm_shape(birm_B) + tm_polygons(x="holc_grade", title="B",alpha=.1,border.col='blue')+
+   tm_shape(birm_C) + tm_polygons(x="holc_grade", title="C",alpha=.1,border.col='orange')+
+   tm_shape(birm_D) + tm_polygons(x="holc_grade", title="D",alpha=.1,border.col='red') + 
+   tm_add_legend('title', 
+               	col = c('green','blue', 'orange', 'red' ),
+               	border.col = "grey40",
+               	#size = bubble_sizes,
+               	labels = c('Grade A','Grade B','Grade C','Grade D'),
+               	title="Redlining") +
+   tm_layout(main.title = "Birmingham", title.size = 1, 
+             title.position = c("center", "top"), 
+             legend.outside=T, legend.position= c("right", "top"))
+
+```
 
 
 # Exercise 3: 
