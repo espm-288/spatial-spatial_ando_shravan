@@ -86,6 +86,12 @@ NDVI is used as proxy measure of vegetation health, cover and phenology (life cy
 tmap_mode("plot")
 
 birm_ndvi <- terra::rast("../data/NDVI/composite_birmingham.tif")
+oakland_ndvi <- terra::rast("../data/NDVI/composite_SF.tif")
+ind_ndvi <- terra::rast("../data/NDVI/composite_indianapolis.tif")
+minn_ndvi <- terra::rast("../data/NDVI/composite_minneapolis.tif")
+phoenix_ndvi <- terra::rast("../data/NDVI/composite_phoenix.tif")
+balti_ndvi <- terra::rast("../data/NDVI/composite_baltimore.tif")
+
 
 # View(birm_ndvi)
 
@@ -101,7 +107,7 @@ tm_shape(birm_ndvi, bbox = st_bbox(birm)) + tm_raster() +
 # Exercise 2
 **Plot the average NDVI values in different neighborhoods as well as the distribution of pixel values across cities and neighborhoods. Show how the trends differ between cities.**
 
-
+#Unit testing with Baltimore
 ```{r}
 #Convert birm raster to terra land
 birm_terra <- vect(birm)
@@ -123,12 +129,85 @@ birm_vec <- birm |> mutate(ID = 1:n(), area=st_area(geometry))
 #Join birm_vec and mean_ndvi, keeping the ID, holc_grade, mean_ndvi and area
 birm_final <- inner_join(mean_ndvi, birm_vec, by='ID')
 
-birm_final$area
+#birm_final$area
 
 #find the weighted average of NDVI values by area, for every holc_grade
-birm_final |> group_by(holc_grade) |> summarize(mean_holc_ndvi = sum(NDVI*area) / sum(area) )
+birm_weighted <- birm_final |> group_by(holc_grade) |> summarize(mean_holc_ndvi = sum(NDVI*area) / sum(area) )
+
+birm_weighted
 
 ```
+
+### Function to get the distribution of NDVI across different holc grade (and redlined areas)
+```{r}
+#Function to find the distribution of NDVI across different holc grade
+#Input: A. vector / polygons corresponding to different grades (in a particular city ) - city
+# B. raster of NDVI in the city with redlining - city_ndvi
+#Output: Table with NDVI across holc grade
+
+NDVI_distr_finder <- function(city,city_ndvi,city_name){
+  
+    
+  #Some polygons have spherical geometry errors -> removing those!
+  city<-city[st_is_valid(city),]
+ 
+  #Convert birm raster to terra land
+  city_terra <- vect(city)
+  # city_terra
+  
+  #Summarize the data, i.e. within each polygon, calculate the average value of NDVI
+  #convert to tibble object
+  mean_ndvi <- terra::extract(city_ndvi, city_terra, mean, na.rm = T) |> as_tibble()
+  
+  #Give birm a column number, and calculate 
+  city_vec <- city |> mutate(ID = 1:n(), area=st_area(geometry))
+  
+  #Join birm_vec and mean_ndvi, keeping the ID, holc_grade, mean_ndvi and area
+  city_final <- inner_join(mean_ndvi, city_vec, by='ID')
+  
+  #find the weighted average of NDVI values by area, for every holc_grade
+  city_weighted <- city_final |> 
+    group_by(holc_grade) |> 
+    summarize(mean_holc_ndvi = sum(NDVI*area) / sum(area) )
+
+  colnames(city_weighted)[2]<- paste0(city_name,' NDVI')
+  
+  return(city_weighted)
+  
+}
+
+```
+
+```{r}
+#Getting the aggregated hold grade for all cities
+birm_op<-NDVI_distr_finder(birm, birm_ndvi, 'Birmingham')
+oakland_op<-NDVI_distr_finder(oakland, oakland_ndvi, 'Oakland')
+# phoenix_op<-NDVI_distr_finder(phoenix, phoenix_ndvi, 'Phoenix') #25 areas have issues - removing
+minn_op<-NDVI_distr_finder(minn, minn_ndvi, 'Minneapolis')
+ind_op<-NDVI_distr_finder(ind, ind_ndvi, 'Indianapolis')
+balti_op<-NDVI_distr_finder(balti, balti_ndvi, 'Baltimore')
+
+#Skipping Phoenix because >50% (13/25 polygons have spherical geometry failure errors)
+#The number is 2 for Minneapolis and Baltimore 
+```
+
+### Table with NDVIs across holc grades for all cities (Except Phoenix)
+```{r}
+# rm(ndvi_holc_grade_agg)
+ndvi_holc_grade_agg <- cbind(birm_op,oakland_op[,2], minn_op[,2], balti_op[,2], ind_op[,2])
+ndvi_holc_grade_agg
+```
+
+
+
+
+
+
+
+
+
+
+
 ### Show cropped NDVI to polygons of interest
 ```{r, eval=FALSE}
 #Test code : delete
