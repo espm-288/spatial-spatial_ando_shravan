@@ -6,8 +6,9 @@ output:
     df_print: tibble
 ---
 
+
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(messages = FALSE, cache = FALSE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, cache = FALSE)
 
 # remotes::install_deps()
 library(tmap)      #interactive maps, raster + vector layers
@@ -80,6 +81,10 @@ NDVI is used as proxy measure of vegetation health, cover and phenology (life cy
 # Exercise 1
 **Create a map which shows current (2019) mean NDVI across city redlining from the 1950s.**
 
+## Get the NDVI data
+
+Read in the raster files for each city that has the NDVI per pixel
+
 ```{r}
 
 
@@ -95,14 +100,77 @@ balti_ndvi <- terra::rast("../data/NDVI/composite_baltimore.tif")
 
 # View(birm_ndvi)
 
-# Order is important -> first is lower (NDVI)
-# set the bounding of the smaller dataset
-tm_shape(birm_ndvi, bbox = st_bbox(birm)) + tm_raster() +
-   tm_shape(birm) + tm_polygons("holc_grade", alpha=0.6)
+# tmap_options(check.and.fix = TRUE)
+# 
+# # Order is important -> first is lower (NDVI)
+# # set the bounding of the smaller dataset
+# tm_shape(birm_ndvi, bbox = st_bbox(birm)) + tm_raster() +
+#    tm_shape(birm) + tm_polygons("holc_grade", alpha=0.6)
+# 
+# tm_shape(balti_ndvi, bbox = st_bbox(balti)) + tm_raster() +
+#    tm_shape(balti) + tm_polygons("holc_grade", alpha=0.6)
+# 
+# tm_shape(phoenix_ndvi, bbox = st_bbox(phoenix)) + tm_raster() +
+#    tm_shape(phoenix) + tm_polygons("holc_grade", alpha=0.6)
 
 # we want to go within each redline district and add up all the NDVI data so it can be compared to other 1930s areas
 
 ```
+
+
+## Function to overlay NDVI and redlined areas
+
+This function takes in both the vector file that has the polygons for the holc grades in every city, as well as the raster files containing the NDVI for that city, and plots them overlaid in much the same way as Schell et al. 
+
+```{r}
+library(tmaptools)
+tmap_options(check.and.fix = TRUE)
+
+Redlining_plotter <- function(city_ndvi,city_holc_polygons, city_name){
+   
+   #city_holc_polygons<-city_holc_polygons[st_is_valid(city_holc_polygons),]
+   holc_mask <- terra::mask(x=city_ndvi, mask=vect(city_holc_polygons))
+
+   #Separate each grade to be plotted as separate layers
+   city_A <- city_holc_polygons[city_holc_polygons$holc_grade == "A",]
+   city_B <- city_holc_polygons[city_holc_polygons$holc_grade == "B",]
+   city_C <- city_holc_polygons[city_holc_polygons$holc_grade == "C",]
+   city_D <- city_holc_polygons[city_holc_polygons$holc_grade == "D",]
+   
+   
+   tm_shape(holc_mask, bbox = st_bbox(city_holc_polygons)) + tm_raster(palette = get_brewer_pal(palette="YlGn", n=5, plot=FALSE), title = "NDVI") +
+      tm_shape(city_A) + tm_polygons(x="holc_grade", title="A",alpha=0,border.col='green', title="A")+
+      tm_shape(city_B) + tm_polygons(x="holc_grade", title="B",alpha=0,border.col='blue')+
+      tm_shape(city_C) + tm_polygons(x="holc_grade", title="C",alpha=0,border.col='orange')+
+      tm_shape(city_D) + tm_polygons(x="holc_grade", title="D",alpha=0,border.col='red') + 
+      tm_add_legend('title', 
+                  	col = c('green','blue', 'orange', 'red' ),
+                  	border.col = "grey40",
+                  	labels = c('Grade A','Grade B','Grade C','Grade D'),
+                  	title="Redlining") +
+      tm_layout(main.title = city_name, title.size = 1, 
+                title.position = c("center", "top"), 
+                legend.outside=T, legend.position= c("right", "top"))
+      
+}
+
+```
+
+## Generate plots for each city
+
+Call the 'Redlining_plotter' function for each city
+
+```{r}
+tmap_mode("plot")
+
+Redlining_plotter(balti_ndvi, balti, "Baltimore")
+Redlining_plotter(birm_ndvi, birm, "Birmingham")
+Redlining_plotter(ind_ndvi, ind, "Indianapolis")
+Redlining_plotter(minn_ndvi, minn, "Minneapolis")
+Redlining_plotter(oakland_ndvi, oakland, "Oakland")
+Redlining_plotter(phoenix_ndvi, phoenix, "Phoenix")
+```
+
 
 # Exercise 2
 **Plot the average NDVI values in different neighborhoods as well as the distribution of pixel values across cities and neighborhoods. Show how the trends differ between cities.**
@@ -138,7 +206,10 @@ birm_weighted
 
 ```
 
-### Function to get the distribution of NDVI across different holc grade (and redlined areas)
+## Function for NDVI distribution 
+
+This function calculates the distribution of NDVI across different holc grade (and redlined areas)
+
 ```{r}
 #Function to find the distribution of NDVI across different holc grade
 #Input: A. vector / polygons corresponding to different grades (in a particular city ) - city
@@ -178,8 +249,10 @@ NDVI_distr_finder <- function(city,city_ndvi,city_name){
 
 ```
 
+## Dervice values for all cities
+
 ```{r}
-#Getting the aggregated hold grade for all cities
+#Getting the aggregated holc grade for all cities
 birm_op<-NDVI_distr_finder(birm, birm_ndvi, 'Birmingham')
 oakland_op<-NDVI_distr_finder(oakland, oakland_ndvi, 'Oakland')
 # phoenix_op<-NDVI_distr_finder(phoenix, phoenix_ndvi, 'Phoenix') #25 areas have issues - removing
@@ -191,73 +264,15 @@ balti_op<-NDVI_distr_finder(balti, balti_ndvi, 'Baltimore')
 #The number is 2 for Minneapolis and Baltimore 
 ```
 
-### Table with NDVIs across holc grades for all cities (Except Phoenix)
+## Tabulate results
+
+Table with NDVIs across holc grades for all cities (Except Phoenix)
+
+
 ```{r}
 # rm(ndvi_holc_grade_agg)
 ndvi_holc_grade_agg <- cbind(birm_op,oakland_op[,2], minn_op[,2], balti_op[,2], ind_op[,2])
 ndvi_holc_grade_agg
-```
-
-
-
-
-
-
-
-
-
-
-
-### Show cropped NDVI to polygons of interest
-```{r, eval=FALSE}
-#Test code : delete
-tmap_mode("view")
-holc_mask <- terra::mask(x=birm_ndvi, mask=birm_terra)
-tm_shape(holc_mask, bbox = st_bbox(birm)) + tm_raster()
-
-
-tm_shape(holc_mask, bbox = st_bbox(birm)) + tm_raster(palette = terrain.colors(4)) +
-   tm_shape(birm, is.master = TRUE) + tm_polygons("holc_grade", alpha=1) #+ tm_borders(col="holc_grade")
-
-tm_shape(birm_ndvi, bbox = st_bbox(birm)) + tm_raster(palette = terrain.colors(5)) +
-   tm_shape(birm) + tm_polygons("holc_grade", alpha=.1) #+ tm_borders(col="holc_grade")
-
-holc_mask_inv <- 1 - holc_mask
-holc_mask_inv
-
-tm_shape(holc_mask_inv, bbox = st_bbox(birm)) + tm_raster(palette = -terrain.colors(5)) +
-   tm_shape(birm) + tm_polygons("holc_grade", alpha=.1,border.col='red') #+ tm_fill(col="holc_grade") 
-
-```
-
-## TODO: Convert this into a function and call for each city
-
-```{r}
-library(tmaptools)
-holc_mask <- terra::mask(x=birm_ndvi, mask=birm_terra)
-
-tmap_mode("plot")
-birm_A <- birm[birm$holc_grade == "A",]
-birm_B <- birm[birm$holc_grade == "B",]
-birm_C <- birm[birm$holc_grade == "C",]
-birm_D <- birm[birm$holc_grade == "D",]
-
-
-tm_shape(holc_mask, bbox = st_bbox(birm)) + tm_raster(palette = get_brewer_pal(palette="YlGn", n=5, plot=FALSE), title = "NDVI") +
-   tm_shape(birm_A) + tm_polygons(x="holc_grade", title="A",alpha=0,border.col='green', title="A")+
-   tm_shape(birm_B) + tm_polygons(x="holc_grade", title="B",alpha=0,border.col='blue')+
-   tm_shape(birm_C) + tm_polygons(x="holc_grade", title="C",alpha=0,border.col='orange')+
-   tm_shape(birm_D) + tm_polygons(x="holc_grade", title="D",alpha=0,border.col='red') + 
-   tm_add_legend('title', 
-               	col = c('green','blue', 'orange', 'red' ),
-               	border.col = "grey40",
-               	#size = bubble_sizes,
-               	labels = c('Grade A','Grade B','Grade C','Grade D'),
-               	title="Redlining") +
-   tm_layout(main.title = "Birmingham", title.size = 1, 
-             title.position = c("center", "top"), 
-             legend.outside=T, legend.position= c("right", "top"))
-
 ```
 
 
