@@ -175,7 +175,10 @@ Redlining_plotter(phoenix_ndvi, phoenix, "Phoenix")
 # Exercise 2
 **Plot the average NDVI values in different neighborhoods as well as the distribution of pixel values across cities and neighborhoods. Show how the trends differ between cities.**
 
-#Unit testing with Baltimore
+# Unit testing with Baltimore
+
+Let's try to calculate the mean NDVI for Birmingham.
+
 ```{r}
 #Convert birm raster to terra land
 birm_terra <- vect(birm)
@@ -249,7 +252,7 @@ NDVI_distr_finder <- function(city,city_ndvi,city_name){
 
 ```
 
-## Dervice values for all cities
+## Derive values for all cities
 
 ```{r}
 #Getting the aggregated holc grade for all cities
@@ -272,10 +275,16 @@ Table with NDVIs across holc grades for all cities (Except Phoenix)
 ```{r}
 # rm(ndvi_holc_grade_agg)
 ndvi_holc_grade_agg <- cbind(birm_op,oakland_op[,2], minn_op[,2], balti_op[,2], ind_op[,2])
-ndvi_holc_grade_agg
+print(ndvi_holc_grade_agg)
 ```
+
+
+
 
 
 # Exercise 3: 
 **Explain why considering systematic inequity and racism is important in the context of global change and developing solutions to the biodiversity crisis.**
+
+
+We find that there is a clear difference between the mean NDVI values in the different grades (A to D) in every city we sampled. Furthermore, for certain cities such as Oakland and Baltimore, we find that there is a larger disparity in mean NDVI values in grade "D" or redlined areas that other cities. We would like to conduct a statistical analysis of these differences to provide some significance estimates. 
 
