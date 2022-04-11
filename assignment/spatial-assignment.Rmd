@@ -238,10 +238,10 @@ balti_op<-NDVI_distr_finder(balti, balti_ndvi, 'Baltimore')
 
 ```
 
-*Skipping Phoenix because >50% (13/25 polygons have spherical geometry failure errors)*.
-
-
-The number is 2 for Minneapolis and Baltimore 
+Note:
+Baltimore, Minniapolis and Phoenix data had 2, 2 and 13 polygons with spherical geometry failures respectively. When generating the aggregate table, we skipped polygons with these errors.
+However, over 50% (13/25 polygons) in Phoneix have spherical geometry failure errors. Since this number is non-trivial, it poses a risk in the analysis results and therefore, we have not included the aggregate NDVI numbers for Phoenix.
+ 
 
 
 ## Tabulate results
@@ -255,12 +255,21 @@ kable(ndvi_holc_grade_agg)
 ```
 
 
-
-
-
 # Exercise 3: 
 **Explain why considering systematic inequity and racism is important in the context of global change and developing solutions to the biodiversity crisis.**
 
+1. Systemic inequity and racism with biodiversity crisis
+"In the wake of the Great Depression, the federally sponsored Home Owners' Loan Corporation drew maps of neighborhoods in U.S. cities that characterized their desirability for mortgage lending. Many neighborhoods with Black and immigrant communities received the worst grade, restricting access to federally backed loans and favorable mortgage terms." [1]
 
-We find that there is a clear difference between the mean NDVI values in the different grades (A to D) in every city we sampled. Furthermore, for certain cities such as Oakland and Baltimore, we find that there is a larger disparity in mean NDVI values in grade "D" or redlined areas that other cities. We would like to conduct a statistical analysis of these differences to provide some significance estimates. 
+We find that there is a clear difference between the mean NDVI values in the different grades (A to D) in every city we sampled. Furthermore, for certain cities such as Oakland and Baltimore, we find that there is a larger disparity in mean NDVI values in grade "D" or redlined areas that other cities.   
+
+2. Systemic inequity and racism with pollution.
+Researchers have found that these 'redlined' areas have higher levels of air pollution 80 years later. Communities of color in the United States are systematically exposed to higher levels of air pollution [1][2]
+
+The above analysis and linked study illustrate how systemic inequity and rascism have resulted in disparate access to biodiversity and cleaner air. Therefore, in the design of solutions to mitigate the diversity loss, pollution and the like, it is critical to build a holistic solution that doesn't serve to further the inequity or access to resources but helps build a more just society.
+
+
+
+[1] https://www.sciencedaily.com/releases/2022/03/220309090657.htm
+[2] https://pubs.acs.org/doi/10.1021/acs.estlett.1c01012
 
