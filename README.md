@@ -30,20 +30,17 @@ We are going to explore one metric for how structural racism and classism underp
 
 # Our Findings
 We were able to reproduce the same figures as follows:
-![Fig. 2.]()
+![Fig. 2.1 Baltimore](assignment/spatial-assignment_files/figure-html/unnamed-chunk-5-1.png)
+![Fig. 2.1 Baltimore](assignment/spatial-assignment_files/figure-html/unnamed-chunk-5-2.png)
+![Fig. 2.1 Baltimore](assignment/spatial-assignment_files/figure-html/unnamed-chunk-5-3.png)
+![Fig. 2.1 Baltimore](assignment/spatial-assignment_files/figure-html/unnamed-chunk-5-4.png)
+![Fig. 2.1 Baltimore](assignment/spatial-assignment_files/figure-html/unnamed-chunk-5-5.png)
+![Fig. 2.1 Baltimore](assignment/spatial-assignment_files/figure-html/unnamed-chunk-5-6.png)
 
 
-All work for this assignment should be in the `assignment` directory.  You will work in the `.Rmd` notebook, and commit your rendered output files (`.md` and associated files) in the `assignment` directory as well.
+You can find the [RMD file here](assignment/spatial-assignment.Rmd) and the final knitted and formatted [output file here](assignment/spatial-assignment.md), and the final [rendered html here](assignment/spatial-assignment.html)
 
-## Special files
 
-All team repositories will also include most of the special files found here:
-
-### Common files
-
-- `README.md` this file, a general overview of the repository in markdown format.  
-- `.gitignore` Optional file, ignore common file types we don't want to accidentally commit to GitHub. Most projects should use this. 
-- `<REPO-NAME>.Rproj` Optional, an R-Project file created by RStudio for it's own configuration.  Some people prefer to `.gitignore` this file.
 
 
 
