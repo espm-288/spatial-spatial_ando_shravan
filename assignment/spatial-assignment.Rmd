@@ -4,6 +4,7 @@ author: "Ando Shah and Shravan Kumar Undaru"
 output: 
   html_document:
     df_print: tibble
+    keep_md: true
 ---
 
 
@@ -38,6 +39,10 @@ We are going to explore one metric for how structural racism and classism underp
 
 We are going to recreate these city maps, and plot the distributions and mean vegetation patterns across cities to explore the structural inequality and racism that Schell et al highlight in their paper.
 
+
+## Acquire redlined areas for the following cities:
+
+
 ```{r}
 
 #Sf <- simple features!
@@ -47,9 +52,12 @@ balti <- sf::st_read('https://dsl.richmond.edu/panorama/redlining/static/downloa
 phoenix <- sf::st_read('https://dsl.richmond.edu/panorama/redlining/static/downloads/geojson/AZPhoenix19XX.geojson')
 minn <- sf::st_read('https://dsl.richmond.edu/panorama/redlining/static/downloads/geojson/MNMinneapolis1937.geojson')
 oakland <- sf::st_read('https://dsl.richmond.edu/panorama/redlining/static/downloads/geojson/CAOakland1937.geojson')
+```
 
-# View(birm)
-# View(oakland)
+
+## Data Exploration
+
+```{r}
 
 
 #tmap interactive
@@ -64,15 +72,6 @@ tm_shape(oakland) + tm_polygons("holc_grade", alpha=0.4) + tm_graticules() + tm_
 ```
 
 
-To do this we are going to use the following spatial data:  
-
-**1.Mapping Inequality:** (vector data)  
-Please take the time to read the introduction to this dataset [here](https://dsl.richmond.edu/panorama/redlining/#loc=3/41.245/-105.469&text=intro)
-
-> "As you explore the materials Mapping Inequality, you will quickly encounter exactly that kind of language, descriptions of the "infiltration" of what were quite often described as "subversive," "undesirable," "inharmonious," or "lower grade" populations, for they are everywhere in the HOLC archive ....These grades were a tool for redlining: making it difficult or impossible for people in certain areas to access mortgage financing and thus become homeowners. Redlining directed both public and private capital to native-born white families and away from African American and immigrant families. As homeownership was arguably the most significant means of intergenerational wealth building in the United States in the twentieth century, these redlining practices from eight decades ago had long-term effects in creating wealth inequalities that we still see today. Mapping Inequality, we hope, will allow and encourage you to grapple with this history of government policies contributing to inequality."
-
-**2.Normalized Difference Vegetation Index (NDVI)** (raster data)
-NDVI is used as proxy measure of vegetation health, cover and phenology (life cycle stage) over large areas. It is calculated using multiple bands from satellite images.
 
 # Exercise 1
 **Create a map which shows current (2019) mean NDVI across city redlining from the 1950s.**
@@ -93,21 +92,6 @@ minn_ndvi <- terra::rast("../data/NDVI/composite_minneapolis.tif")
 phoenix_ndvi <- terra::rast("../data/NDVI/composite_phoenix.tif")
 balti_ndvi <- terra::rast("../data/NDVI/composite_baltimore.tif")
 
-
-# View(birm_ndvi)
-
-# tmap_options(check.and.fix = TRUE)
-# 
-# # Order is important -> first is lower (NDVI)
-# # set the bounding of the smaller dataset
-# tm_shape(birm_ndvi, bbox = st_bbox(birm)) + tm_raster() +
-#    tm_shape(birm) + tm_polygons("holc_grade", alpha=0.6)
-# 
-# tm_shape(balti_ndvi, bbox = st_bbox(balti)) + tm_raster() +
-#    tm_shape(balti) + tm_polygons("holc_grade", alpha=0.6)
-# 
-# tm_shape(phoenix_ndvi, bbox = st_bbox(phoenix)) + tm_raster() +
-#    tm_shape(phoenix) + tm_polygons("holc_grade", alpha=0.6)
 
 # we want to go within each redline district and add up all the NDVI data so it can be compared to other 1930s areas
 
@@ -166,6 +150,8 @@ Redlining_plotter(minn_ndvi, minn, "Minneapolis")
 Redlining_plotter(oakland_ndvi, oakland, "Oakland")
 Redlining_plotter(phoenix_ndvi, phoenix, "Phoenix")
 ```
+
+
 
 
 # Exercise 2
@@ -250,9 +236,13 @@ minn_op<-NDVI_distr_finder(minn, minn_ndvi, 'Minneapolis')
 ind_op<-NDVI_distr_finder(ind, ind_ndvi, 'Indianapolis')
 balti_op<-NDVI_distr_finder(balti, balti_ndvi, 'Baltimore')
 
-#Skipping Phoenix because >50% (13/25 polygons have spherical geometry failure errors)
-#The number is 2 for Minneapolis and Baltimore 
 ```
+
+*Skipping Phoenix because >50% (13/25 polygons have spherical geometry failure errors)*.
+
+
+The number is 2 for Minneapolis and Baltimore 
+
 
 ## Tabulate results
 
@@ -260,9 +250,8 @@ Table with NDVIs across holc grades for all cities (Except Phoenix)
 
 
 ```{r}
-# rm(ndvi_holc_grade_agg)
 ndvi_holc_grade_agg <- cbind(birm_op,oakland_op[,2], minn_op[,2], balti_op[,2], ind_op[,2])
-print(ndvi_holc_grade_agg)
+kable(ndvi_holc_grade_agg)
 ```
 
 
