@@ -217,7 +217,7 @@ NDVI_distr_finder <- function(city,city_ndvi,city_name){
     group_by(holc_grade) |> 
     summarize(mean_holc_ndvi = round(sum(NDVI*area) / sum(area), 2 ))
 
-  colnames(city_weighted)[2]<- paste0(city_name,' NDVI')
+  colnames(city_weighted)[2]<- paste0(city_name)
   
   return(city_weighted)
   
@@ -253,7 +253,17 @@ Table with NDVIs across holc grades for all cities (Except Phoenix)
 ndvi_holc_grade_agg <- cbind(birm_op,oakland_op[,2], minn_op[,2], balti_op[,2], ind_op[,2])
 kable(ndvi_holc_grade_agg)
 ```
+```{r}
 
+grades <- ndvi_holc_grade_agg |> select('Birmingham', 'Oakland', 'Minneapolis','Baltimore', 'Indianapolis') |> as.vector()
+
+
+barplot(t(t(grades)),col = c( "green", "blue","orange","red"),legend = rownames(ndvi_holc_grade_agg), args.legend=list(title="Grades",x = "topright",bty='n', inset=c(-0.07,0)), beside = T, horiz=F, main="Mean NDVI variance across holc grades and cities", ylab="mean NDVI")
+
+
+
+
+```
 
 # Exercise 3: 
 **Explain why considering systematic inequity and racism is important in the context of global change and developing solutions to the biodiversity crisis.**
