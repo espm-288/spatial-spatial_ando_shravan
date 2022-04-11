@@ -28,6 +28,10 @@ We are going to explore one metric for how structural racism and classism underp
 **Figure 2** in the Schell paper shows how NDVI (Normalized Difference Vegetation Index) tracks historical redlining.
 ![Fig. 1.](assignment/figures/fig2.png)  
 
+
+--------------------------------
+
+
 # Our Findings
 We were able to reproduce the same figures as follows:
 ![Fig. 2.1 Baltimore](assignment/spatial-assignment_files/figure-html/unnamed-chunk-5-1.png)
@@ -38,14 +42,7 @@ We were able to reproduce the same figures as follows:
 ![Fig. 2.1 Baltimore](assignment/spatial-assignment_files/figure-html/unnamed-chunk-5-6.png)
 
 
-You can find the [RMD file here](assignment/spatial-assignment.Rmd) and the final knitted and formatted [output file here](assignment/spatial-assignment.md), and the final [rendered html here](assignment/spatial-assignment.html)
-
-
-
-
-
-- `DESCRIPTION` a metadata file for the repository, based on the R package standard. It's main purpose here is as a place to list any additional R packages/libraries needed for any of the .Rmd files to run.
-- `.github/workflows/main.yml` defines the Continuous Integration testing script for running the .Rmd files to confirm reproducibility.
+You can find the [RMD file here](assignment/spatial-assignment.Rmd) and the final knitted and formatted [output file here](assignment/spatial-assignment.md), and the **final [rendered html here](https://espm-288.github.io/spatial-spatial_ando_shravan/assignment/spatial-assignment.html)**
 
 
 
